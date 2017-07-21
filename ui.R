@@ -3,47 +3,55 @@ library(plotly, warn.conflicts = FALSE)
 
 
 shinyUI(fluidPage(
-  titlePanel("DR Graph Fit"),
   
-  #start of sidebar layout
-  sidebarLayout(
-    sidebarPanel(
-      
-      #tags$head(tags$script(src = "message-handler.js")),
-      actionButton("do", "Click Me"),
-      
-      
-      
-      
-      # Copy the line below to make a file upload manager
-      fileInput('file1', 'Choose CSV File',
-                accept=c('text/csv', 
-                         'text/comma-separated-values,text/plain', 
-                         '.csv')),
-      
-      tags$hr(),
-      checkboxInput('header', 'Header', TRUE),
-      radioButtons('sep', 'Separator',
-                   c(Comma=',',
-                     Semicolon=';',
-                     Tab='\t'),
-                   ','),
-      radioButtons('quote', 'Quote',
-                   c(None='',
-                     'Double Quote'='"',
-                     'Single Quote'="'"),
-                   '"')
+  headerPanel("R data reader"),
+  
+  # Input in sidepanel:
+  sidebarPanel(
+    tags$style(type='text/css', ".well { max-width: 20em; }"),
+    # Tags:
+    tags$head(
+      tags$style(type="text/css", "select[multiple] { width: 100%; height:10em}"),
+      tags$style(type="text/css", "select { width: 100%}"),
+      tags$style(type="text/css", "input { width: 19em; max-width:100%}")
     ),
     
-    mainPanel(
-      tableOutput(
-        'contents'
-      ),
-      plotOutput(
-        "plot" 
-      )
-      
-    )
+    # Select filetype:
+    selectInput("readFunction", "Function to read data:", c(
+      # Base R:
+      "read.table",
+      "read.csv",
+      "read.csv2",
+      "read.delim",
+      "read.delim2"
+    )),
+    
+    # Argument selecter:
+    htmlOutput("ArgSelect"),
+    
+    # Argument field:
+    htmlOutput("ArgText"),
+    
+    # Upload data:
+    fileInput("file", "Upload data-file:"),
+    
+    # Variable selection:
+    htmlOutput("varselect"),
+    
+    
+    actionButton("do", "Click Me"),
+    br()
+    
+  ),
+  
+  # Main:
+  mainPanel(
+    
+    tableOutput("table"),
+    plotOutput( "plot" )
+    
+    
+    
     
   )
 ))
