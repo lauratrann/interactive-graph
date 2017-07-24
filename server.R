@@ -85,7 +85,14 @@ shinyServer(function(input, output) {
       
       reshapedX <- reshape2::melt(fitDR,id.vars = "X") # get numbers ready for use.
       fitDR.LL.4 <- drm(data = reshapedX,value~X,fct=LL.4(),na.action = na.omit) # run model.
+      print(fitDR.LL.4)
+      #print(summary(fitDR.LL.4))
+      #print(summary(fitDR.LL.4))
+      #print(coef(fitDR.LL.4))
       
+      coefficientDRM <- coef(fitDR.LL.4)
+      print("COefficient DRM")
+      print(coefficientDRM[2])
       # predictions and confidence intervals.
       fitDR.fits <- expand.grid(conc=exp(seq(log(1.00e-04), log(1.00e-09), length=100))) 
       # new data with predictions
@@ -97,12 +104,41 @@ shinyServer(function(input, output) {
       reshapedX$XX <- reshapedX$X
       reshapedX$XX[reshapedX$XX == 0] <- 1.00e-09  
       
-      ggplot(reshapedX, aes(x = XX, y = value)) +
+      p <- ggplot(reshapedX, aes(x = XX, y = value)) +
         geom_point() +
         geom_ribbon(data=fitDR.fits, aes(x=conc, y=p, ymin=pmin, ymax=pmax), alpha=0.2) +
         geom_line(data=fitDR.fits, aes(x=conc, y=p)) +
         coord_trans(x="log")
+      
+      print(p) 
+      
+      # Show table:
+      output$summaryTable <- renderTable(digits = -3, {
+        
+        
+        
+        if (is.null(input$vars) || length(input$vars)==0) return(NULL)
+
+        drmHillSlope <- -(coefficientDRM[1])
+        drmBottom <- coefficientDRM[2]
+        drmTop <- coefficientDRM[3]
+        drmEC50 <- coefficientDRM[4]
+        drmLogEC50 <- log10(drmEC50)
+        drmSpan <- ( drmTop - drmBottom )
+        coefficientTable <-list(HillSlope = c(drmHillSlope), ec50 = c(drmEC50), logEC50 = c(drmLogEC50), Bottom = c(drmBottom), Top = c(drmTop), Span = (drmSpan)) 
+      #  row.names(coefficientTable) <- c("hillslope", "ec50", "bottom", "top")
+        print(coefficientTable)
+        
+      })
+      
+      
+      
     })
+    
+    
+
+    
+    
   })
   
   
