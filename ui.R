@@ -42,12 +42,15 @@ shinyUI(fluidPage(
     actionButton("do", "Click Me"),
     br()
     
+    
+    
   ),
   
   # Main:
   mainPanel(
     
     tableOutput("table"),
+    tableOutput("summaryTable"),
     plotOutput( "plot" )
     
     
