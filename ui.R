@@ -1,10 +1,11 @@
 library(shiny)
+library(shinyTable)
 library(plotly, warn.conflicts = FALSE)
 
 
 shinyUI(fluidPage(
   
-  headerPanel("R data reader"),
+  headerPanel("DRC graph"),
   
   # Input in sidepanel:
   sidebarPanel(
@@ -38,23 +39,24 @@ shinyUI(fluidPage(
     # Variable selection:
     htmlOutput("varselect"),
     
-    
-    actionButton("do", "Click Me"),
-    br()
-    
+    actionButton("regraph", "Regraph"),
+    actionButton("do", "Click Me")
     
     
   ),
   
+  
   # Main:
   mainPanel(
-    
-    tableOutput("table"),
-    tableOutput("summaryTable"),
-    plotOutput( "plot" )
-    
-    
+    plotOutput( "plot" ),
+   
+    htable("table", clickId = "tblClick", colHeaders = "provided"),
+    h3("Current Selection"),
+    verbatimTextOutput("clickText"),
+
+    tableOutput("summaryTable"))
     
     
   )
-))
+    
+  )
