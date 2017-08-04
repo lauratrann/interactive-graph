@@ -1,11 +1,11 @@
 library(shiny)
-library(shinyTable)
 library(plotly, warn.conflicts = FALSE)
+library(rhandsontable)
 
 
 shinyUI(fluidPage(
   
-  headerPanel("DRC graph"),
+  headerPanel("R data reader"),
   
   # Input in sidepanel:
   sidebarPanel(
@@ -18,14 +18,14 @@ shinyUI(fluidPage(
     ),
     
     # Select filetype:
-    selectInput("readFunction", "Function to read data:", c(
-      # Base R:
-      "read.table",
-      "read.csv",
-      "read.csv2",
-      "read.delim",
-      "read.delim2"
-    )),
+    selectInput("readFunction", "Function to read data:", 
+                c(
+                  "read.table",
+                  "read.csv",
+                  "read.csv2",
+                  "read.delim",
+                  "read.delim2"
+                )),
     
     # Argument selecter:
     htmlOutput("ArgSelect"),
@@ -39,24 +39,17 @@ shinyUI(fluidPage(
     # Variable selection:
     htmlOutput("varselect"),
     
-    actionButton("regraph", "Regraph"),
-    actionButton("do", "Click Me")
     
+    actionButton("do", "Click Me"),
+    br()
     
   ),
   
-  
   # Main:
   mainPanel(
-    plotOutput( "plot" ),
-   
-    htable("table", clickId = "tblClick", colHeaders = "provided"),
-    h3("Current Selection"),
-    verbatimTextOutput("clickText"),
-
-    tableOutput("summaryTable"))
-    
+    rHandsontableOutput("hot"),
+    tableOutput("summaryTable"),
+    plotOutput( "plot" )
     
   )
-    
-  )
+))
