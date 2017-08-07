@@ -41,6 +41,7 @@ shinyUI(fluidPage(
     
     
     actionButton("do", "Click Me"),
+    actionButton("recalc", "recalc"),
     br()
     
   ),

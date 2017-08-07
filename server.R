@@ -71,10 +71,29 @@ shinyServer(function(input, output) {
       if (is.null(input$vars) || length(input$vars)==0) return(NULL)
       fitDR <<-Dataset()
       values <<- reactiveValues(data = as.data.frame(fitDR))
-      g <- rhandsontable(values$data)
+      g <<- rhandsontable(values$data)
       return(g)
     })
   }
+  
+  redoDataTbl <- function(){ 
+    output$hot <- renderRHandsontable({
+    g <- rhandsontable(values$data)
+    return(g)
+ 
+    })
+  }
+  
+  
+  observeEvent( input$recalc,{
+    values$data <- hot_to_r(input$hot)
+    redoDataTbl()
+    plotData()
+
+    
+  })
+  
+  
   
   
   removeTFCol <- function(){
@@ -99,7 +118,7 @@ shinyServer(function(input, output) {
   
   plotData <- function(){
     output$plot <- renderPlot({
-      reshapedX <- reshape2::melt(fitDR,id.vars = "X") # get numbers ready for use.
+      reshapedX <- reshape2::melt(values$data,id.vars = "X") # get numbers ready for use.
       fitDR.LL.4 <- drm(data = reshapedX,value~X,fct=LL.4(),na.action = na.omit) # run model.
       coefficientDRM <<- coef(fitDR.LL.4)
       # predictions and confidence intervals.
