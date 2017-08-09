@@ -66,6 +66,23 @@ shinyServer(function(input, output) {
   
   
   
+  printLogicTbl <- function(){
+    output$logicTbl <- renderRHandsontable({
+    numrows <<- nrow(fitDR)
+    logic <<- reactiveValues( data = data.frame(logical = rep(TRUE, numrows)))
+    l <<- rhandsontable(logic$data)
+    return(l)
+    })
+  }
+  
+  redoLogicTbl <- function(){
+      output$logicTbl <- renderRHandsontable({
+      logic$data <- hot_to_r(input$logicTbl)
+      l <- rhandsontable(logic$data)
+      return(l)
+    })
+  }
+  
   dataTbl <- function(){
     output$hot <- renderRHandsontable({
       if (is.null(input$vars) || length(input$vars)==0) return(NULL)
@@ -76,30 +93,36 @@ shinyServer(function(input, output) {
     })
   }
   
+  checkValidData <- function(){
+    logic$data <- hot_to_r(input$logicTbl)
+    print(numrows)
+    for(i in 1:numrows){
+      if(logic$data[i,] == 'FALSE'){
+        print("this check works")
+        #what you need
+          # means of "nulling" out values 
+          # problem > you don't want to delete values
+      }
+    }
+  }
+  
   redoDataTbl <- function(){ 
     output$hot <- renderRHandsontable({
+    values$data <- hot_to_r(input$hot)
     g <- rhandsontable(values$data)
     return(g)
  
     })
   }
-  
-  
-  observeEvent( input$recalc,{
-    values$data <- hot_to_r(input$hot)
-    redoDataTbl()
-    plotData()
 
-    
+  observeEvent( input$recalc,{
+    redoDataTbl()
+    checkValidData()
+    redoLogicTbl()
+    plotData()
+    sumTbl()
+
   })
-  
-  
-  
-  
-  removeTFCol <- function(){
-    newFitDR[,Keep_Values:=NULL]
-  }
-  
   
   
   sumTbl <- function(){
@@ -136,13 +159,13 @@ shinyServer(function(input, output) {
         geom_line(data=fitDR.fits, aes(x=conc, y=p)) +
         coord_trans(x="log")
       print(p) 
-      print("this is the plot")
       
     })
   }
   
   observeEvent(input$do, {
     dataTbl()
+    printLogicTbl()
     plotData()
     sumTbl()
   })

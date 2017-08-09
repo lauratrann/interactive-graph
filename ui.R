@@ -49,6 +49,7 @@ shinyUI(fluidPage(
   # Main:
   mainPanel(
     rHandsontableOutput("hot"),
+    rHandsontableOutput("logicTbl"),
     tableOutput("summaryTable"),
     plotOutput( "plot" )
     
