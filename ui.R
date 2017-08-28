@@ -2,13 +2,13 @@ library(shiny)
 library(plotly, warn.conflicts = FALSE)
 library(rhandsontable)
 
-
 shinyUI(fluidPage(
   
   headerPanel("R data reader"),
   
   # Input in sidepanel:
-  sidebarPanel(
+fluidRow( 
+  column(2,
     tags$style(type='text/css', ".well { max-width: 20em; }"),
     # Tags:
     tags$head(
@@ -20,11 +20,7 @@ shinyUI(fluidPage(
     # Select filetype:
     selectInput("readFunction", "Function to read data:", 
                 c(
-                  "read.table",
-                  "read.csv",
-                  "read.csv2",
-                  "read.delim",
-                  "read.delim2"
+                  "read.csv"
                 )),
     
     # Argument selecter:
@@ -39,19 +35,59 @@ shinyUI(fluidPage(
     # Variable selection:
     htmlOutput("varselect"),
     
-    
-    actionButton("do", "Click Me"),
-    actionButton("recalc", "recalc"),
-    br()
-    
+    actionButton("do", "Click Me")
   ),
+  column(2,
+    rHandsontableOutput("hot")
+  ), 
+  column(2,
+    rHandsontableOutput("logicTbl")
+  ), 
+  column(2,
   
-  # Main:
-  mainPanel(
-    rHandsontableOutput("hot"),
-    rHandsontableOutput("logicTbl"),
-    tableOutput("summaryTable"),
-    plotOutput( "plot" )
-    
+   textInput("lEC50", "Lower EC50"),
+   verbatimTextOutput("lowerEC50"),
+   textInput("lTop", "Lower Top "),
+   verbatimTextOutput("lowerTop"),
+   textInput("lBot", "Lower Bottom"),
+   verbatimTextOutput("lowerBot"),
+   textInput("lHill", "Lower Hill"),
+   verbatimTextOutput("lowerHill")
+ 
+  ),
+
+  column(2,
+       textInput("uEC50", "Upper EC50"),
+       verbatimTextOutput("upperEC50"),
+       textInput("uTop", "Upper Top"),
+       verbatimTextOutput("upperTop"),
+       textInput("uBot", "Upper Bottom"),
+       verbatimTextOutput("upperBot"),
+       textInput("uHill", "Upper Hill"),
+       verbatimTextOutput("upperHill")
+       ),
+  column(2,
+       textInput("seedL", "Seed Lower"),
+       verbatimTextOutput("lowerSeed"),
+       textInput("seedU", "Seed Upper"),
+       verbatimTextOutput("upperSeed"),
+       textInput("seedHill", "Seed Hill"),
+       verbatimTextOutput("hillSeed"),
+       textInput("seedEC50", "Seed EC50"),
+       verbatimTextOutput("ec50Seed")
+)
+
+), 
+fluidRow(
+  column(8, align="center",
+         tableOutput("summaryTable"),
+         plotOutput( "plot" )
+         ),
+  column(4, 
+         actionButton("recalc", "Recalculate"),
+         actionButton("resetLogical", "Reset the Logic Table")
+         
   )
+)
+
 ))
